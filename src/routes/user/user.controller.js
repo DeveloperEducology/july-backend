@@ -5,7 +5,10 @@ const axios = require("axios");
 
 const twilio = require("twilio");
 
-
+// const accountSid = process.env.TWILIO_ACCOUNT_SID;
+// const authToken = process.env.TWILIO_AUTH_TOKEN;
+// const serviceSid = process.env.TWILIO_SERVICE_SID; // You can create a Verify Service in the Twilio console and get this SID
+// const client = twilio(accountSid, authToken);
 
 const clientId = "LRDFECK0815DHLLSN7KLJ7NU18YCOYMG";
 const clientSecret = "mssp9lfiqnj2rtm4jfx331csaeoynmm4";
@@ -50,7 +53,6 @@ const createUser = async (req, res) => {
     res.status(403).json({ status: false, error: error });
   }
 };
-
 
 const loginUser = async (req, res) => {
   const { email, password, fcmToken } = req.body;
@@ -411,8 +413,6 @@ module.exports = {
   // fileUpload,
   createUser,
   loginUser,
-  verifyOtp,
-  sendOtp,
   fetchAllUsers,
   fetchUserDetails,
   fetchUsersByIds,

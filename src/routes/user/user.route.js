@@ -7,11 +7,11 @@ const uploadMiddleWare = require("../../middleware/fileUpload");
 router.post("/signup", user_controller.createUser);
 router.post("/create", user_controller.create);
 router.post("/login", user_controller.loginUser);
-router.post("/otp", user_controller.sendOtp);
+// router.post("/otp", user_controller.sendOtp);
 router.post("/otp-less", user_controller.sendOTP);
 router.post("/login-otp", user_controller.loginWithPhone);
 
-router.post("/verifyOtp", user_controller.verifyOtp);
+// router.post("/verifyOtp", user_controller.verifyOtp);
 router.post("/verifyOTP-less", user_controller.verifyOTP);
 router.get("/fetchUsers", user_controller.fetchAllUsers);
 router.get("/fetchUserDetails/:id", user_controller.fetchUserDetails);
