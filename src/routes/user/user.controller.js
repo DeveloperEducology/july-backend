@@ -5,10 +5,7 @@ const axios = require("axios");
 
 const twilio = require("twilio");
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const serviceSid = process.env.TWILIO_SERVICE_SID; // You can create a Verify Service in the Twilio console and get this SID
-const client = twilio(accountSid, authToken);
+
 
 const clientId = "LRDFECK0815DHLLSN7KLJ7NU18YCOYMG";
 const clientSecret = "mssp9lfiqnj2rtm4jfx331csaeoynmm4";
@@ -54,78 +51,6 @@ const createUser = async (req, res) => {
   }
 };
 
-const sendOtp = async (req, res) => {
-  const { phoneNumber } = req.body;
-
-  try {
-    // Check if a user with this phone number already exists
-    let user = await UserModel.findOne({ phoneNumber });
-
-    // If the user exists, return an error message
-    if (user) {
-      return res
-        .status(400)
-        .json({ status: false, message: "User already exists. OTP not sent." });
-    }
-
-    // If the user does not exist, create a new one
-    user = new UserModel({ phoneNumber });
-    await user.save();
-    console.log("New user created:", user);
-
-    // Send OTP using your SMS service
-    await client.verify.services(serviceSid).verifications.create({
-      to: phoneNumber,
-      channel: "sms",
-    });
-
-    res.send({ status: true, message: "OTP sent successfully" });
-  } catch (error) {
-    console.log("Error sending OTP", error);
-    res.status(500).json({ status: false, error: error.message });
-  }
-};
-
-const verifyOtp = async (req, res) => {
-  const { phoneNumber, otp } = req.body;
-
-  try {
-    const verification = await client.verify
-      .services(serviceSid)
-      .verificationChecks.create({
-        to: phoneNumber,
-        code: otp,
-      });
-
-    if (verification.status === "approved") {
-      let user = await UserModel.findOne({ phoneNumber });
-
-      if (!user) {
-        user = new UserModel({ phoneNumber });
-        await user.save();
-      }
-
-      const token = jwt.sign(
-        { user_id: user._id, phoneNumber: user.phoneNumber },
-        process.env.TOKEN_KEY,
-        { expiresIn: "2h" }
-      );
-
-      const userWithoutSensitiveInfo = {
-        ...user.toObject(),
-        token,
-      };
-      delete userWithoutSensitiveInfo.password;
-
-      res.send({ data: userWithoutSensitiveInfo, status: true });
-    } else {
-      res.status(403).json({ status: false, message: "Invalid OTP" });
-    }
-  } catch (error) {
-    console.error("Error verifying OTP:", error);
-    res.status(500).json({ status: false, error: "Internal Server Error" });
-  }
-};
 
 const loginUser = async (req, res) => {
   const { email, password, fcmToken } = req.body;
